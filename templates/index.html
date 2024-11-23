@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cervical Cancer Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .btn {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cervical Cancer Prediction</h1>
+    <form id="predictionForm">
+        {% for feature in features %}
+        <div class="form-group">
+            <label for="{{ feature }}">{{ feature }}</label>
+            <input type="number" step="any" id="{{ feature }}" name="{{ feature }}" placeholder="Enter {{ feature }}">
+        </div>
+        {% endfor %}
+        <button type="button" class="btn" onclick="submitForm()">Submit</button>
+    </form>
+    <div class="results" id="results"></div>
+    <script>
+        async function submitForm() {
+            const form = document.getElementById('predictionForm');
+            const formData = new FormData(form);
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            });
+            const result = await response.json();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>Prediction Results:</h2>';
+            for (const [model, prediction] of Object.entries(result)) {
+                resultsDiv.innerHTML += `<p><strong>${model}:</strong> ${prediction}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
